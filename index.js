@@ -1,34 +1,14 @@
+// Import the express module
 const express = require('express');
-const textToSpeech = require('@google-cloud/text-to-speech');
-const cors = require('cors');
-
 const app = express();
-app.use(express.json());
-app.use(cors());
+const port = process.env.PORT || 3000;  // Use the port assigned by Render, or default to 3000
 
-const client = new textToSpeech.TextToSpeechClient({
-  keyFilename: 'tts-backend.json'
+// Define the root route for the homepage
+app.get('/', (req, res) => {
+  res.send('Welcome to Nepali Text-to-Speech Service!');
 });
 
-app.post('/speak', async (req, res) => {
-  const text = req.body.text;
-
-  const request = {
-    input: { text },
-    voice: { languageCode: 'ne-NP', ssmlGender: 'FEMALE' },
-    audioConfig: { audioEncoding: 'MP3' },
-  };
-
-  try {
-    const [response] = await client.synthesizeSpeech(request);
-    res.set('Content-Type', 'audio/mpeg');
-    res.send(response.audioContent);
-  } catch (err) {
-    console.error('Error:', err);
-    res.status(500).send('Something went wrong.');
-  }
-});
-
-app.listen(5000, () => {
-  console.log('✅ Nepali TTS server running on http://localhost:5000');
+// Start the server to listen on the specified port
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
